@@ -26,16 +26,16 @@ ccc = "./data/c_s_only_augccpvdz_density.out"
 nnn = "./data/n_s_only_augccpvdz_density.out"
 ppp = "./data/p_s_only_augccpvdz_density.out"
 
-train_datasets = ["1at-400.pkl",
-    "2ta-400.pkl",
-    "3aa-400.pkl",
-    "4ca-400.pkl",
-    "5gt-400.pkl",
-    "6ct-400.pkl",
-    "7ga-400.pkl",
-    "8cg-400.pkl",
-    "9gc-400.pkl",
-    "10gg-400.pkl"]
+train_datasets = ["../data/01-at-400-train.pkl",
+    "../data/02-ta-400-train.pkl",
+    "../data/03-aa-400-train.pkl",
+    "../data/04-ca-400-train.pkl",
+    "../data/05-gt-400-train.pkl",
+    "../data/06-ct-400-train.pkl",
+    "../data/07-ga-400-train.pkl",
+    "../data/08-cg-400-train.pkl",
+    "../data/09-gc-400-train.pkl",
+    "../data/10-gg-400-train.pkl"]
 
 print(train_datasets)
 
@@ -108,7 +108,11 @@ for train_size in train_split:
 
             for step, data in enumerate(train_loader):
                 mask = torch.where(data.y == 0, torch.zeros_like(data.y), torch.ones_like(data.y)).detach()
-                y_ml = model(data.to(device))*mask.to(device)
+                output = model(data.to(device))
+                if output.shape != data.y.shape:
+                    print(f"Skipping sample: predicted shape {output.shape}, target shape {data.y.shape}")
+                    continue
+                y_ml = output * mask.to(device)
                 err = (y_ml - data.y.to(device))
 
                 for mul, l in Rs:

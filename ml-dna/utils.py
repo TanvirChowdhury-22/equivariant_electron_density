@@ -81,6 +81,16 @@ def get_iso_permuted_dataset(picklefile, amberFlag=0, **atm_iso):
             else:
                 raise ValueError("Isolated atom type not supported!")
 
+        # ⚠️ Sanity check: make sure all tensors align by atom count
+        min_atoms = min(pos.shape[0], c.shape[0], n.shape[0], z.shape[0], x.shape[0])
+        if not (pos.shape[0] == c.shape[0] == n.shape[0] == z.shape[0] == x.shape[0]):
+            print(f"Mismatch detected: trimming to {min_atoms} atoms")
+            pos = pos[:min_atoms]
+            z = z[:min_atoms]
+            x = x[:min_atoms]
+            c = c[:min_atoms]
+            n = n[:min_atoms]
+            exp = exp[:min_atoms]
         pop = torch.where(n != 0, c*2*math.sqrt(2)/n, n)
 
         #now permute, yzx -> xyz
